@@ -144,7 +144,7 @@ When using a ramp, the metronome will automatically reverse the ramp direction o
 **Limitations**
 
 - Ramp is a BPM value with the same limitations: a whole number from 30 to 300.
-- Rate is the change in BPM per second, defined as a number between 0.5 and 20.
+- Rate is the change in BPM per second, defined as a whole number from 1 to 15.
 - Dropping beats is not supported while ramping tempo.
 
 ### Interactive BPM Adjustment
@@ -236,4 +236,4 @@ Contributions are welcome! Feel free to submit issues or pull requests.
 
 ## License
 
-This project is licensed under the MIT License.
+This project is licensed under the Apache 2.0 License.

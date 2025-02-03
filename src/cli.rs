@@ -1,19 +1,21 @@
-use clap::Parser;
+use clap::{value_parser, Parser};
+
+// TODO: Add validators for all options.
 
 /// CLI options for the metronome application.
 #[derive(Parser, Debug, Clone)]
 #[command(author, version, about, long_about = None)]
 pub struct CliOptions {
     /// Beats per minute
-    #[arg(long)]
+    #[arg(long, value_parser = value_parser!(u32).range(30..301))]
     pub bpm: u32,
 
     /// Optional custom click sound file
     #[arg(long)]
     pub file: Option<String>,
 
-    /// Custom click type, e.g., "default" or "harmonic"
-    #[arg(long, default_value = "default")]
+    /// Custom click type (i.e. "click" or "harmonic")
+    #[arg(long, default_value = "click")]
     pub click: String,
 
     /// Beat dropping pattern as "on,off" (i.e. 4,8) or a single number used for both on and off.
@@ -21,16 +23,16 @@ pub struct CliOptions {
     pub drop_beats: Option<String>,
 
     /// Percentage of beats to drop randomly
-    #[arg(long)]
+    #[arg(long, value_parser = value_parser!(u8).range(1..100))]
     pub drop_rate: Option<u8>,
 
     /// BPM ramp target
-    #[arg(long)]
+    #[arg(long, value_parser = value_parser!(u32).range(30..301))]
     pub ramp: Option<u32>,
 
     /// BPM change rate (for ramping)
-    #[arg(long)]
-    pub rate: Option<f32>,
+    #[arg(long, value_parser = value_parser!(u8).range(1..11))]
+    pub rate: Option<u8>,
 
     /// Drone tones (comma separated)
     #[arg(long)]

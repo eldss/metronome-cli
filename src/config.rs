@@ -8,7 +8,7 @@ pub struct AppConfig {
     pub drop_beats: Option<(u8, u8)>,
     pub drop_rate: Option<u8>,
     pub ramp: Option<u32>,
-    pub rate: Option<f32>,
+    pub rate: Option<u8>,
     pub drone: Option<Vec<String>>,
     pub tones: Option<String>,
     pub progression: Option<String>,

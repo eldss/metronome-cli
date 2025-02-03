@@ -15,7 +15,7 @@ impl Scheduler {
     }
 
     /// Update scheduling parameters (like BPM changes, ramp target, etc.)
-    pub fn update(&mut self, bpm: u32, ramp: Option<u32>, rate: Option<f32>) {
+    pub fn update(&mut self, bpm: u32, ramp: Option<u32>, rate: Option<u8>) {
         todo!("Update the scheduling parameters");
     }
 }
