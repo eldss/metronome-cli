@@ -1,0 +1,19 @@
+[package]
+name = "metronome-cli"
+version = "0.1.0"
+edition = "2021"
+authors = ["Evan Douglass <evandouglass@eldss.dev>"]
+license = "Apache-2.0"
+description = "A powerful and flexible command line metronome."
+readme = "README.md"
+repository = "https://github.com/eldss/metronome-cli/"
+keywords = ["metronome", "cli", "music", "tempo", "practice"]
+categories = ["command-line-utilities", "multimedia::audio"]
+
+[[bin]]
+name = "metronome"
+path = "src/main.rs"
+
+[dependencies]
+clap = { version = "4.5.27", features = ["derive"] }
+crossterm = "0.28"
