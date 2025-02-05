@@ -2,6 +2,7 @@ mod analysis;
 mod audio;
 mod cli;
 mod config;
+mod constants;
 mod metronome;
 mod recording;
 mod scheduler;
@@ -17,4 +18,5 @@ fn main() {
 
     // Convert options into app config
     let config = AppConfig::from_cli(cli_options);
+    println!("{config:?}");
 }

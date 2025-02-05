@@ -1,4 +1,4 @@
-use clap::{value_parser, Parser};
+use clap::Parser;
 
 // TODO: Add validators for all options.
 
@@ -7,7 +7,7 @@ use clap::{value_parser, Parser};
 #[command(author, version, about, long_about = None)]
 pub struct CliOptions {
     /// Beats per minute
-    #[arg(long, value_parser = value_parser!(u32).range(30..301))]
+    #[arg(long)]
     pub bpm: u32,
 
     /// Optional custom click sound file
@@ -23,15 +23,15 @@ pub struct CliOptions {
     pub drop_beats: Option<String>,
 
     /// Percentage of beats to drop randomly
-    #[arg(long, value_parser = value_parser!(u8).range(1..100))]
+    #[arg(long)]
     pub drop_rate: Option<u8>,
 
     /// BPM ramp target
-    #[arg(long, value_parser = value_parser!(u32).range(30..301))]
+    #[arg(long)]
     pub ramp: Option<u32>,
 
     /// BPM change rate (for ramping)
-    #[arg(long, value_parser = value_parser!(u8).range(1..11))]
+    #[arg(long)]
     pub rate: Option<u8>,
 
     /// Drone tones (comma separated)
@@ -51,21 +51,20 @@ pub struct CliOptions {
     pub beats_per: Option<String>,
 
     /// Enable interactive BPM adjustments.
-    #[arg(long)]
+    #[arg(long, default_value_t = false)]
     pub interactive: bool,
 
     /// Enable recording
-    #[arg(long)]
+    #[arg(long, default_value_t = false)]
     pub record: bool,
 
     /// Enable analysis mode
-    #[arg(long)]
+    #[arg(long, default_value_t = false)]
     pub analyze: bool,
 }
 
 impl CliOptions {
     pub fn parse() -> Self {
-        // Clap does the parsing.
         clap::Parser::parse()
     }
 }

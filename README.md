@@ -193,23 +193,39 @@ This example plays the same chord for every beat, but you can also define a chor
 metronome \
 --bpm 60 \
 --click harmonic \
---tones "Cmaj(C3,E3,G3) Gmaj(G3,B3,D4) Amin(A3,C4,E4) Fmaj(F3,A3,C4)" \
+--tones "Cmaj(C3 E3 G3),Gmaj(G3 B3 D4),Amin(A3 C4 E4),Fmaj(F3 A3 C4)" \
 --progression Cmaj,Gmaj,Amin,Fmaj \
 --beats-per 4,4,2,2
 ```
 
-In this case, the `tones` argument defines four different chords with the labels Cmaj, Gmaj Amin and Fmaj. These same identifiers are used in the `progression` argument to define the chord progression used. Finally, define the number of beats each chord should use with the `--beats-per` argument. In this case, Cmaj and Gmaj are used for 4 beats each, then Amin and Fmaj are used for 2 beats each.
+In this case, the `tones` argument defines four different chords with the labels Cmaj, Gmaj Amin and Fmaj. These same identifiers are used in the `progression` argument to define the chord progression used. The number of beats each chord should use is defined with the `--beats-per` argument. In this case, Cmaj and Gmaj are used for 4 beats each, then Amin and Fmaj are used for 2 beats each.
 
 `beats-per` can also accept a single number that is used for each condition, so `--beats-per 4` is equivalent to `--beats-per 4,4,4,4` in the example above. 
 
-Note that the chord identifiers can be any alphanumeric characters plus the special character `#`. For example: `a,b,c,d` or `1,2,3,4` are equally valid as those above so long as they match between `tones` and `progression`.
+Note that the chord identifiers can be any alphanumeric characters plus the special character `#`. For example: `a,b,c,d` or `1,2,3,4` are equally valid as those above so long as they match between `tones` and `progression`. This would look like
+
+```sh
+...
+--tones "a(C3 E3 G3),b(G3 B3 D4),c(A3 C4 E4),d(F3 A3 C4)" \
+--progression a,b,c,d \
+...
+```
+
+or 
+
+```sh
+...
+--tones "1(C3 E3 G3),2(G3 B3 D4),3(A3 C4 E4),4(F3 A3 C4)" \
+--progression 1,2,3,4 \
+...
+```
 
 **Limitations**
 
 - Every tone defined in `tones` must be used in `progression`.
 - If `beats-per` is not a single number, then the length of the `progression` and `beats-per` arguments must be equal.
-- If `progression` is present, `beats-per` must also be present. Further, `tones` is expected to take the form of `<ID>(T,T,T,T)` with spaces between each definition.
-- Tones can range from `C1` to `C6`, where the letter is the note name and the number is the octave number (`C3` is middle C). Sharps and flats are supported using `#` for sharp and `b` for flat, as in `C#4` and `Db4`.
+- If `progression` is present, `beats-per` must also be present. Further, `tones` is expected to take the form of `<ID>(T T T T)` with commas between each definition. Internal tones must be separated by spaces in this case
+- Tones can range from `Ab1` to `G#6`, where the letter is a capital and represents the note name. The number is the octave number (`C3` is middle C). Sharps and flats are supported using `#` for sharp and `b` for flat, as in `C#4` and `Db4`.
 - The number of tones must be between 1 and 4 per chord.
 - Numbers in `beats-per` are whole numbers between 1 and 12.
 
