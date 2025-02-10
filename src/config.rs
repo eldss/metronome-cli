@@ -42,12 +42,11 @@ impl AppConfig {
             helpers::validate_and_extract_option(cli.change_rate, 1, 99, "change-rate")?;
 
         // Extract list types.
-        let progression =
-            helpers::parse_comma_separated_option::<String>(cli.progression, "progression")?;
+        let drone = Self::get_drone(cli.drone)?;
+        let progression = Self::get_progression(cli.progression)?;
         let beats_per = helpers::parse_comma_separated_option::<u8>(cli.beats_per, "beats-per")?;
 
         // Extract complex types.
-        let drone = Self::get_drone(cli.drone)?;
         let drop_beats = Self::get_drop_beats(cli.drop_beats)?;
         let tones = Self::get_tones(cli.tones)?;
 
@@ -89,6 +88,19 @@ impl AppConfig {
     /// Prints warnings to stderr (if any).
     fn print_warnings(&self) {
         self.change_rate_warning();
+    }
+
+    fn get_progression(progression: Option<String>) -> Result<Option<Vec<String>>, String> {
+        let prog = helpers::parse_comma_separated_option::<String>(progression, "progression")?;
+        match prog {
+            Some(list) => {
+                if list.len() > 24 {
+                    return Err("Progression must be at most 24 chords long".to_string());
+                }
+                Ok(Some(list))
+            }
+            None => Ok(None),
+        }
     }
 
     fn get_drone(drone: Option<String>) -> Result<Option<Vec<String>>, String> {
@@ -562,6 +574,21 @@ mod tests {
             )
         );
         assert_eq!(config.beats_per, Some(vec![4, 3, 2]));
+    }
+
+    #[rstest]
+    fn progression_fails_if_len_over_24(base_cli: CliOptions) {
+        let cli = CliOptions {
+            progression: Some(String::from(
+                "1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1",
+            )),
+            tones: Some(String::from("1(A3),2(B3)")),
+            beats_per: Some(String::from("4")),
+            harmonic: true,
+            ..base_cli
+        };
+        let config = AppConfig::from_cli(cli);
+        assert!(config.is_err());
     }
 
     #[rstest]
