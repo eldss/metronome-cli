@@ -77,7 +77,7 @@ metronome --bpm 120
 Play using a custom sound file:
 
 ```sh
-metronome --bpm 100 --click custom --file custom-click.wav
+metronome --bpm 100 --file custom-click.wav
 ```
 
 **Limitations**
@@ -130,7 +130,7 @@ Note that you provide the number of _beats_ not bars. The metronome does not hav
 Gradually increase from 60 BPM to 200 BPM at a rate of 5 BPM per second:
 
 ```sh
-metronome --bpm 60 --ramp 200 --rate 5
+metronome --bpm 60 --ramp 200 --change-rate 5
 ```
 
 Gradually decrease from 300 BPM to 100 BPM at a rate of the default 1 BPM per second:
@@ -149,7 +149,9 @@ When using a ramp, the metronome will automatically reverse the ramp direction o
 
 ### Interactive BPM Adjustment
 
-While the metronome is playing (except while tempo ramp is active), the terminal will display the current BPM. You can adjust the tempo interactively by pressing the up/down arrow keys to increase and decrease the tempo. The change will be reflected in the terminal.
+While the metronome is playing the terminal will display the current BPM. You can adjust the tempo interactively by pressing the up/down arrow keys to increase and decrease the tempo. The change will be reflected in the terminal.
+
+Changing the tempo is disabled in ramp mode.
 
 While playing
 - Press ↑ / ↓ to increase or decrease BPM.
@@ -176,7 +178,7 @@ metronome --bpm 100 --drone C3,Eb3,G3
 
 **Limitations**
 
-- Tones can range from `C1` to `C6`, where the letter is the note name and the number is the octave number (`C3` is middle C). Sharps and flats are supported using `#` for sharp and `b` for flat, as in `C#4` and `Db4`.
+- Tones can range from `A1` to `G6`, where the letter is the note name and the number is the octave number (`C3` is middle C). Sharps and flats are supported using `#` for sharp and `b` for flat, as in `C#4` and `Db4`.
 - The number of tones must be between 1 and 4.
 
 #### Tones in Time
@@ -184,7 +186,7 @@ metronome --bpm 100 --drone C3,Eb3,G3
 Tones and chords can also be played in time, creating a harmonic metronome:
 
 ```sh
-metronome --bpm 60 --click harmonic --tones C3,Eb3,G3
+metronome --bpm 60 --harmonic --tones C3,Eb3,G3
 ```
 
 This example plays the same chord for every beat, but you can also define a chord progression:
@@ -192,7 +194,7 @@ This example plays the same chord for every beat, but you can also define a chor
 ```sh
 metronome \
 --bpm 60 \
---click harmonic \
+--harmonic \
 --tones "Cmaj(C3 E3 G3),Gmaj(G3 B3 D4),Amin(A3 C4 E4),Fmaj(F3 A3 C4)" \
 --progression Cmaj,Gmaj,Amin,Fmaj \
 --beats-per 4,4,2,2
@@ -223,6 +225,8 @@ or
 **Limitations**
 
 - Every tone defined in `tones` must be used in `progression`.
+- There can be at most 10 chords in tones, with each chord having between 1 and 4 notes.
+- If you use the same tone chord key multiple times, the last one defined will be the one used.
 - If `beats-per` is not a single number, then the length of the `progression` and `beats-per` arguments must be equal.
 - If `progression` is present, `beats-per` must also be present. Further, `tones` is expected to take the form of `<ID>(T T T T)` with commas between each definition. Internal tones must be separated by spaces in this case
 - Tones can range from `Ab1` to `G#6`, where the letter is a capital and represents the note name. The number is the octave number (`C3` is middle C). Sharps and flats are supported using `#` for sharp and `b` for flat, as in `C#4` and `Db4`.
@@ -253,3 +257,97 @@ Contributions are welcome! Feel free to submit issues or pull requests.
 ## License
 
 This project is licensed under the Apache 2.0 License.
+
+## Appendix
+
+### Valid Invocations
+
+#### Basic Metronome:
+Play the metronome with a basic click.
+
+```sh
+metronome --bpm <bpm>
+```
+
+#### Custom Click Sound:
+Basic metronome with a custom sound.
+
+```sh
+metronome --bpm <bpm> --file <path_to_sound_file>
+```
+
+#### Beat Dropping Pattern:
+Play with <on> beats played and <off> beats muted. Given one number, it will be used for <on> and <off>
+
+```sh
+metronome --bpm <bpm> --drop-beats <on,off>
+metronome --bpm <bpm> --drop-beats <on_and_off>
+```
+
+#### Random Beat Dropping:
+Mute a specified percentage of beats randomly during playback.
+
+```sh
+metronome --bpm <bpm> --drop-rate <drop_rate>
+```
+
+#### BPM Ramp:
+Ramp the bpm from a start to an end tempo and back again, at a given rate.
+
+```sh
+metronome --bpm <bpm> --ramp <target_bpm>
+metronome --bpm <bpm> --ramp <target_bpm> --change-rate <rate>
+```
+
+#### Drone Tones:
+Play a drone note(s) while the metronome is playing. Can play from 1 to 4 notes at a time.
+
+Drone tones cannot be used with the harmonic metronome.
+
+```sh
+metronome --bpm <bpm> --drone <drone_tones>
+```
+
+#### Harmonic Click with Tones:
+Play the given notes instead of a click. Can play from 1 to 4 notes at a time.
+
+```sh
+metronome --bpm <bpm> --harmonic --tones <tones>
+```
+
+#### Harmonic Click with Chord Progression:
+Play the given chord progression instead of a click. Like playing tones instead of a click, but allows defining groups of tones, the order they are played, and the number of beats each plays for.
+
+```sh
+metronome --bpm <bpm> --harmonic --tones <tones> --progression <progression> --beats-per <beats_per>
+```
+
+#### Recording:
+Record your practice while the metronome is playing and play it back when finished.
+
+Recording can be used with all other options.
+
+```sh
+metronome --bpm <bpm> --record
+```
+
+#### Analysis:
+Analyze your playing accuracy.
+
+Analysis can be used with all other options.
+
+```sh
+metronome --bpm <bpm> --analyze
+```
+
+### Invalid combinations
+
+Summary of Invalid Combinations
+- `--drop-beats` and `--drop-rate` cannot be used together.
+- `--drop-beats` or `--drop-rate` cannot be used with `--ramp`.
+- `--tones`, `--progression`, or `--beats-per` cannot be used without specifying `--harmonic`.
+- `--progression` requires `--beats-per`.
+- `--progression` and `--beats-per` must have matching lengths or `--beats-per` must be a single number.
+- `--progression` requires `--tones` to define tone combinations (chords) and the IDs in tones must match those in the progression. 
+- `--progression` cannot contain tone IDs not defined in `--tones`.
+- `--drone` and `--tones` cannot be used together.

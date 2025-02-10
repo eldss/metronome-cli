@@ -1,7 +1,5 @@
 use clap::Parser;
 
-// TODO: Add validators for all options.
-
 /// CLI options for the metronome application.
 #[derive(Parser, Debug, Clone)]
 #[command(author, version, about, long_about = None)]
@@ -13,10 +11,6 @@ pub struct CliOptions {
     /// Optional custom click sound file
     #[arg(long)]
     pub file: Option<String>,
-
-    /// Custom click type (i.e. "click" or "harmonic")
-    #[arg(long, default_value = "click")]
-    pub click: String,
 
     /// Beat dropping pattern as "on,off" (i.e. 4,8) or a single number used for both on and off.
     #[arg(long)]
@@ -32,7 +26,7 @@ pub struct CliOptions {
 
     /// BPM change rate (for ramping)
     #[arg(long)]
-    pub rate: Option<u8>,
+    pub change_rate: Option<u8>,
 
     /// Drone tones (comma separated)
     #[arg(long)]
@@ -50,16 +44,16 @@ pub struct CliOptions {
     #[arg(long)]
     pub beats_per: Option<String>,
 
-    /// Enable interactive BPM adjustments.
-    #[arg(long, default_value_t = false)]
-    pub interactive: bool,
+    /// Enable harmonic click
+    #[arg(long)]
+    pub harmonic: bool,
 
     /// Enable recording
-    #[arg(long, default_value_t = false)]
+    #[arg(short, long)]
     pub record: bool,
 
     /// Enable analysis mode
-    #[arg(long, default_value_t = false)]
+    #[arg(short, long)]
     pub analyze: bool,
 }
 
