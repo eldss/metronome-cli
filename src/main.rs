@@ -1,29 +1,23 @@
-mod analysis;
 mod audio;
 mod cli;
 mod config;
 mod constants;
 mod helpers;
 mod metronome;
-mod recording;
-mod scheduler;
 mod synth;
 mod terminal;
 
 use cli::CliOptions;
 use config::AppConfig;
 
-fn main() {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Parse CLI Options
     let cli_options = CliOptions::parse();
 
     // Convert options into app config
-    let config = AppConfig::from_cli(cli_options)
-        .map_err(|e| {
-            eprintln!("{}", e);
-            std::process::exit(1);
-        })
-        .unwrap();
+    let config = AppConfig::from_cli(cli_options)?;
 
-    println!("{config:?}");
+    metronome::play(&config)?;
+
+    Ok(())
 }

@@ -1,13 +1,20 @@
 # Metronome CLI
 
-A powerful and flexible command-line metronome designed for musicians, offering advanced timing control, beat randomization, speed ramping, and interactive playback. 
+A powerful and flexible command-line metronome designed to enhance your internal timing and harmonic intuition with advanced features like beat muting, BPM ramping, and drone tones or chords.
+
+## Overview
+
+The Metronome CLI is a versatile command-line tool designed to enhance your internal timing and harmonic understanding. It offers basic metronome functionality with advanced timing options including configurable bars-on/bars-off beat muting cycles, random beat muting, and BPM ramping for gradual tempo changes. Additionally, it aims to improve harmonic understanding by playing drone notes or chords in a progression.
+
+Planned enhancements include recording practice sessions for playback to get immediate feedback on your playing.
+
+The tool intentionally omits some standard metronome features like time signatures and accented notes to encourage users to develop a better internal sense of timing.
 
 ## Features
 
 ### Basic Metronome Functionality
 
 - Play a metronome at a specified BPM.
-- Optionally provide your own sound file to play for the click.
 - Adjust BPM while playing using interactive terminal controls.
   
 ### Advanced Timing Options
@@ -16,13 +23,11 @@ A powerful and flexible command-line metronome designed for musicians, offering 
 - Mute beats randomly by percentage.  
 - Gradually increase and decrease tempo within a given range at a configurable rate.   
 
-### Bonus Features (Planned Enhancements)
+### Harmonic Features
 
 - Play a drone note or continuous chord in the background.  
-- Load user-supplied sounds, with optional pitch analysis and adjustment for custom notes.  
 - Play metronome beats as notes or chords with configurable note length.  
-- Record your playing while metronome is on and playback your performance when complete.  
-- Analyze and visualize timing accuracy.  
+- (Planned) Record your playing while metronome is on and playback your performance when complete.  
 
 ### Missing Features
 
@@ -74,21 +79,13 @@ Play at 120 BPM using the default click:
 metronome --bpm 120
 ```
 
-Play using a custom sound file:
-
-```sh
-metronome --bpm 100 --file custom-click.wav
-```
-
 **Limitations**
 
 - BPM is a whole number ranging from 30 to 300.
-- If proving a custom sound file, the length of the sample when played must fit between beats. If playback overlaps with the next beat, it will be cut off.
-- When specifying a custom click, the `--file` argument must be provided.
 
-### Beat Dropping
+### Beat Dropping (Muting)
 
-There are two ways to drop - meaning mute - beats during playback. Either drop a continuous length of notes in a regular pattern, or set a percentage defining the chance any given beat will be dropped.
+There are two ways to drop - or mute - beats during playback. Either drop a continuous length of notes in a regular pattern, or set a percentage defining the chance any given beat will be dropped.
 
 These features can be used to improve your internal sense of timing.
 
@@ -147,7 +144,7 @@ When using a ramp, the metronome will automatically reverse the ramp direction o
 - Rate is the change in BPM per second, defined as a whole number from 1 to 15.
 - Dropping beats is not supported while ramping tempo.
 
-### Interactive BPM Adjustment
+### (Planned) Interactive BPM Adjustment
 
 While the metronome is playing the terminal will display the current BPM. You can adjust the tempo interactively by pressing the up/down arrow keys to increase and decrease the tempo. The change will be reflected in the terminal.
 
@@ -158,7 +155,7 @@ While playing
   - Disabled in ramp mode
 - Press `q` to quit.
 
-### Drones & Chords (Planned)
+### Drones & Chords
 
 #### Drones
 
@@ -178,7 +175,7 @@ metronome --bpm 100 --drone C3,Eb3,G3
 
 **Limitations**
 
-- Tones can range from `A1` to `G6`, where the letter is the note name and the number is the octave number (`C3` is middle C). Sharps and flats are supported using `#` for sharp and `b` for flat, as in `C#4` and `Db4`.
+- Tones can range from `Ab1` to `G#6`, where the letter is the note name and the number is the octave number (`C3` is middle C). Sharps and flats are supported using `#` for sharp and `b` for flat, as in `C#4` and `Db4`.
 - The number of tones must be between 1 and 4.
 
 #### Tones in Time
@@ -233,7 +230,7 @@ or
 - The number of tones must be between 1 and 4 per chord.
 - Numbers in `beats-per` are whole numbers between 1 and 12.
 
-### Recording & Analysis (Planned)
+### Recording (Planned)
 
 Record and playback performance:
 
@@ -243,16 +240,9 @@ metronome --bpm 120 --record
 
 Once the metronome is stopped, the program will provide options to playback the recording.
 
-Analyze timing accuracy:
-
-```sh
-metronome --bpm 120 --analyze
-```
-
 ## Contributing
 
 Contributions are welcome! Feel free to submit issues or pull requests.
-
 
 ## License
 
@@ -267,13 +257,6 @@ Play the metronome with a basic click.
 
 ```sh
 metronome --bpm <bpm>
-```
-
-#### Custom Click Sound:
-Basic metronome with a custom sound.
-
-```sh
-metronome --bpm <bpm> --file <path_to_sound_file>
 ```
 
 #### Beat Dropping Pattern:
@@ -322,7 +305,9 @@ Play the given chord progression instead of a click. Like playing tones instead 
 metronome --bpm <bpm> --harmonic --tones <tones> --progression <progression> --beats-per <beats_per>
 ```
 
-#### Recording:
+if `progression` or `beats-per` is used the command requires all three of the options seen after the `harmonic` flag, which is also required.
+
+#### (Planned) Recording:
 Record your practice while the metronome is playing and play it back when finished.
 
 Recording can be used with all other options.
@@ -331,22 +316,13 @@ Recording can be used with all other options.
 metronome --bpm <bpm> --record
 ```
 
-#### Analysis:
-Analyze your playing accuracy.
-
-Analysis can be used with all other options.
-
-```sh
-metronome --bpm <bpm> --analyze
-```
-
 ### Invalid combinations
 
 Summary of Invalid Combinations
 - `--drop-beats` and `--drop-rate` cannot be used together.
 - `--drop-beats` or `--drop-rate` cannot be used with `--ramp`.
 - `--tones`, `--progression`, or `--beats-per` cannot be used without specifying `--harmonic`.
-- `--progression` requires `--beats-per`.
+- `--progression` requires `--beats-per` and `--tones`. Same for `--beats-per`, but `--tones` can be used on its own.
 - `--progression` and `--beats-per` must have matching lengths or `--beats-per` must be a single number.
 - `--progression` requires `--tones` to define tone combinations (chords) and the IDs in tones must match those in the progression. 
 - `--progression` cannot contain tone IDs not defined in `--tones`.

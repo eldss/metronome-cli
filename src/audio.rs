@@ -1,27 +1,92 @@
-/// Abstract trait for audio output.
+use cpal::{
+    traits::{DeviceTrait, HostTrait},
+    Device, SampleFormat, Stream, StreamConfig,
+};
+use fundsp::prelude::*;
+use std::{
+    error::Error,
+    sync::{
+        atomic::{AtomicU32, AtomicU64, Ordering},
+        Arc, Mutex,
+    },
+};
 
-pub trait AudioOutput {
-    /// Play a sound corresponding to a beat (or a drone/chord) at a specific time.
-    fn play(&mut self, sound: Vec<u8>);
+/// Initializes the audio host, selects the default output device, and builds an output stream.
+///
+/// # Arguments
+///
+/// * `bpm` - An `Arc` pointing to an `AtomicU32` representing the beats per minute.
+/// * `sequencer` - An `Arc` pointing to a `Mutex`-wrapped `Sequencer`.
+/// * `sample_counter` - An `Arc` pointing to an `AtomicU64` for tracking the sample count.
+///
+/// # Returns
+///
+/// * `Ok(Stream)` - The configured output audio stream ready for playback.
+/// * `Err(Box<dyn Error>)` - An error if the stream couldn't be created.
+pub fn initialize_audio_stream(
+    bpm: Arc<AtomicU32>,
+    sequencer: Arc<Mutex<Sequencer>>,
+    sample_counter: Arc<AtomicU64>,
+) -> Result<Stream, Box<dyn Error>> {
+    let device = get_audio_device()?;
+    let config = get_stream_config(&device)?;
+
+    // Extract the sample rate as a f64 for calculations and build the output stream
+    let sample_rate = config.sample_rate.0 as f64;
+    let stream = device.build_output_stream(
+        &config,
+        move |data: &mut [f32], _: &cpal::OutputCallbackInfo| {
+            // Lock the sequencer for thread-safe access.
+            let mut seq_lock = sequencer.lock().unwrap();
+
+            // Calculate the number of samples per beat.
+            let current_bpm = bpm.load(Ordering::Relaxed);
+            let beat_period = 60.0 / (current_bpm as f64);
+            let beat_samples = (beat_period * sample_rate).round() as u64;
+
+            // Process each frame in the output buffer.
+            for frame in data.chunks_mut(config.channels as usize) {
+                // Retrieve the next sample from the sequencer.
+                let sample = seq_lock.get_mono();
+                for sample_out in frame.iter_mut() {
+                    *sample_out = sample as f32;
+                }
+
+                // Update the sample counter and reset the sequencer if a beat has completed.
+                let prev_count = sample_counter.fetch_add(1, Ordering::Relaxed) + 1;
+                if prev_count >= beat_samples {
+                    seq_lock.reset();
+                    sample_counter.fetch_sub(beat_samples, Ordering::Relaxed);
+                }
+            }
+        },
+        move |err| eprintln!("Stream error: {}", err),
+        None,
+    )?;
+
+    Ok(stream)
 }
 
-/// A default implementation stub that might use an audio library like rodio or cpal.
-
-pub struct DefaultAudioOutput {
-    // internal state such as audio device, sink, etc.
+/// Gets the default audio output device.
+fn get_audio_device() -> Result<Device, Box<dyn Error>> {
+    let host = cpal::default_host();
+    let device = host
+        .default_output_device()
+        .ok_or("no output device available")?;
+    Ok(device)
 }
 
-impl DefaultAudioOutput {
-    pub fn new() -> Self {
-        Self {
-            // Add internal state
-        }
-    }
-}
+/// Retrieves the stream configuration for the given audio device.
+fn get_stream_config(device: &Device) -> Result<StreamConfig, Box<dyn Error>> {
+    // Retrieve the supported output configurations.
+    let supported_configs = device.supported_output_configs()?;
+    let supported_config = supported_configs
+        .filter(|config| config.sample_format() == SampleFormat::F32)
+        .next()
+        .ok_or("no supported output configuration with f32 sample format")?;
 
-impl AudioOutput for DefaultAudioOutput {
-    fn play(&mut self, sound: Vec<u8>) {
-        // In a real implementation, convert `sound` to an audio buffer and play it.
-        todo!("Implement audio playback using a chosen library")
-    }
+    // Choose the configuration with the maximum sample rate.
+    let config: StreamConfig = supported_config.with_max_sample_rate().config();
+
+    Ok(config)
 }
