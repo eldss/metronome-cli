@@ -8,10 +8,6 @@ pub struct CliOptions {
     #[arg(long)]
     pub bpm: u32,
 
-    /// Optional custom click sound file
-    #[arg(long)]
-    pub file: Option<String>,
-
     /// Beat dropping pattern as "on,off" (i.e. 4,8) or a single number used for both on and off.
     #[arg(long)]
     pub drop_beats: Option<String>,
@@ -47,14 +43,6 @@ pub struct CliOptions {
     /// Enable harmonic click
     #[arg(long)]
     pub harmonic: bool,
-
-    /// Enable recording
-    #[arg(short, long)]
-    pub record: bool,
-
-    /// Enable analysis mode
-    #[arg(short, long)]
-    pub analyze: bool,
 }
 
 impl CliOptions {

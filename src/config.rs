@@ -11,7 +11,6 @@ use crate::{
 #[derive(Clone, Debug)]
 pub struct AppConfig {
     pub bpm: u32,
-    pub file: Option<String>,
     pub drop_beats: Option<(u8, u8)>,
     pub drop_rate: Option<u8>,
     pub ramp: Option<u32>,
@@ -20,8 +19,6 @@ pub struct AppConfig {
     pub tones: Option<Tones>,
     pub progression: Option<Vec<String>>,
     pub beats_per: Option<Vec<u8>>,
-    pub record: bool,
-    pub analyze: bool,
     pub harmonic: bool,
 }
 
@@ -52,7 +49,6 @@ impl AppConfig {
 
         let config = AppConfig {
             bpm,
-            file: cli.file,
             drop_beats,
             drop_rate,
             ramp,
@@ -61,8 +57,6 @@ impl AppConfig {
             tones,
             progression,
             beats_per,
-            record: cli.record,
-            analyze: cli.analyze,
             harmonic: cli.harmonic,
         };
 
@@ -331,7 +325,6 @@ mod tests {
     fn base_cli() -> CliOptions {
         CliOptions {
             bpm: 120,
-            file: None,
             drop_beats: None,
             drop_rate: None,
             ramp: None,
@@ -340,8 +333,6 @@ mod tests {
             tones: None,
             progression: None,
             beats_per: None,
-            record: false,
-            analyze: false,
             harmonic: false,
         }
     }
@@ -350,16 +341,6 @@ mod tests {
     fn bpm_is_a_number(base_cli: CliOptions) {
         let config = AppConfig::from_cli(base_cli).unwrap();
         assert_eq!(config.bpm, 120);
-    }
-
-    #[rstest]
-    fn file_is_a_string(base_cli: CliOptions) {
-        let cli = CliOptions {
-            file: Some(String::from("test.wav")),
-            ..base_cli
-        };
-        let config = AppConfig::from_cli(cli).unwrap();
-        assert_eq!(config.file, Some(String::from("test.wav")));
     }
 
     #[rstest]
@@ -689,17 +670,5 @@ mod tests {
         };
         let config = AppConfig::from_cli(cli);
         assert!(config.is_err());
-    }
-
-    #[rstest]
-    fn analyze_and_record_are_bools(base_cli: CliOptions) {
-        let cli = CliOptions {
-            analyze: true,
-            record: true,
-            ..base_cli
-        };
-        let config = AppConfig::from_cli(cli).unwrap();
-        assert_eq!(config.analyze, true);
-        assert_eq!(config.record, true);
     }
 }

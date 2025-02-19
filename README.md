@@ -1,12 +1,10 @@
 # Metronome CLI
 
-A powerful and flexible command-line metronome designed to enhance your internal timing and harmonic intuition with advanced features like beat muting, BPM ramping, and drone tones or chords.
+A powerful and flexible command-line metronome designed to enhance your internal timing and harmonic intuition with features like beat muting, BPM ramping, drone tones, and chords.
 
 ## Overview
 
 The Metronome CLI is a versatile command-line tool designed to enhance your internal timing and harmonic understanding. It offers basic metronome functionality with advanced timing options including configurable bars-on/bars-off beat muting cycles, random beat muting, and BPM ramping for gradual tempo changes. Additionally, it aims to improve harmonic understanding by playing drone notes or chords in a progression.
-
-Planned enhancements include recording practice sessions for playback to get immediate feedback on your playing.
 
 The tool intentionally omits some standard metronome features like time signatures and accented notes to encourage users to develop a better internal sense of timing.
 
@@ -27,7 +25,6 @@ The tool intentionally omits some standard metronome features like time signatur
 
 - Play a drone note or continuous chord in the background.  
 - Play metronome beats as notes or chords with configurable note length.  
-- (Planned) Record your playing while metronome is on and playback your performance when complete.  
 
 ### Missing Features
 
@@ -230,16 +227,6 @@ or
 - The number of tones must be between 1 and 4 per chord.
 - Numbers in `beats-per` are whole numbers between 1 and 12.
 
-### Recording (Planned)
-
-Record and playback performance:
-
-```sh
-metronome --bpm 120 --record
-```
-
-Once the metronome is stopped, the program will provide options to playback the recording.
-
 ## Contributing
 
 Contributions are welcome! Feel free to submit issues or pull requests.
@@ -306,15 +293,6 @@ metronome --bpm <bpm> --harmonic --tones <tones> --progression <progression> --b
 ```
 
 if `progression` or `beats-per` is used the command requires all three of the options seen after the `harmonic` flag, which is also required.
-
-#### (Planned) Recording:
-Record your practice while the metronome is playing and play it back when finished.
-
-Recording can be used with all other options.
-
-```sh
-metronome --bpm <bpm> --record
-```
 
 ### Invalid combinations
 
