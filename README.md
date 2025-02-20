@@ -81,7 +81,7 @@ metronome --bpm 120
 
 Seriously, lower your volume before playing this for the first time. I have taken pains to balance the mix of sounds, but depending on your own configuration and the options chosen, the output might be loud for your speakers or headphones. This will become more evident when using the drone feature.
 
-I have noticed in testing on my own computer that USB headphones, at least the ones I own, distort the audio in weird ways. The click should sound similar to a closed hi-hat, and the harmonic tones should resemble a hammond organ, and be audible. If that isn't what you are hearing, try an analog connection or direct speaker output. 
+I have noticed in testing on my own computer that USB headphones, at least the ones I own, distort the audio in weird ways. The click should sound similar to a closed hi-hat, pitched down to make it easier to listen to for longer periods of time. The harmonic tones should resemble a hammond organ...and be audible. If that isn't what you are hearing, try an analog connection or direct speaker output. 
 
 If you have suggestions to improve the sound design and/or listening experience I would love to hear them! I want to make this tool usable for real musicians (who also happen to know how to use CLI tools!).
 
@@ -91,7 +91,7 @@ If you have suggestions to improve the sound design and/or listening experience 
 
 ### Beat Dropping (Muting)
 
-There are two ways to drop - or mute - beats during playback. Either drop a continuous length of notes in a regular pattern, or set a percentage defining the chance any given beat will be dropped.
+There are two ways to drop - or mute - beats during playback. Either drop a continuous length of notes in a regular pattern, or set a percentage defining the chance any given beat will be dropped (planned).
 
 These features can be used to improve your internal sense of timing.
 
@@ -115,7 +115,7 @@ This is equivalent to:
 metronome --bpm 120 --drop-beats 4,4
 ```
 
-Drop 25% of beats randomly:
+(Planned) Drop 25% of beats randomly:
 
 ```sh
 metronome --bpm 120 --drop-rate 25
@@ -128,7 +128,7 @@ Note that you provide the number of _beats_ not bars. The metronome does not hav
 - Dropped beats are whole numbers ranging from 1 to 32.
 - Dropped rates are whole percentages ranging from 1% to 99%.
 
-### BPM Ramp (Speed Up/Slow Down)
+### (Planned) BPM Ramp (Speed Up/Slow Down)
 
 Gradually increase from 60 BPM to 200 BPM at a rate of 5 BPM per second:
 
@@ -179,7 +179,9 @@ You can also play a chord as a drone (C minor here):
 metronome --bpm 100 --drone C3,Eb3,G3
 ```
 
-I find higher octaves can start to wear on my ears. Consider experimenting with lower octaves first. And turn your volume down the first time you try a new setting, just in case. I have tried my best to balance the mix in a reasonable way, but I have only tested it on my own computer. Protecting your speakers and your ears is your responsibility!
+I find higher octaves start to wear on my ears quickly. Consider experimenting with lower octaves first. And turn your volume down the first time you try a new setting, just in case. I have tried my best to balance the mix in a reasonable way, but I have only tested it on my own computer (Apple M1). Protecting your speakers and your ears is your responsibility!
+
+Also note that when playing the metronome with drones, you may get a "pulse" at the top of the beat when the hi-hat plays. You may or may not prefer this. If you do not, consider halving the bpm or adding dropped beats to space out the clicks.
 
 **Limitations**
 
@@ -194,7 +196,9 @@ Tones and chords can also be played in time, creating a harmonic metronome:
 metronome --bpm 60 --harmonic --tones C3,Eb3,G3
 ```
 
-This example plays the same chord for every beat, but you can also define a chord progression:
+The harmonic metronome works with beat dropping as well.
+
+The above example plays the same chord for every beat, but you can also define a chord progression (planned):
 
 ```sh
 metronome \
@@ -205,7 +209,7 @@ metronome \
 --beats-per 4,4,2,2
 ```
 
-In this case, the `tones` argument defines four different chords with the labels Cmaj, Gmaj Amin and Fmaj. These same identifiers are used in the `progression` argument to define the chord progression used. The number of beats each chord should use is defined with the `--beats-per` argument. In this case, Cmaj and Gmaj are used for 4 beats each, then Amin and Fmaj are used for 2 beats each.
+In this case, the `tones` argument defines four different chords with the labels Cmaj, Gmaj Amin and Fmaj. Each "chord" can have between 1 and 4 notes. These same identifiers are used in the `progression` argument to define the chord progression used. The number of beats each chord should use is defined with the `--beats-per` argument. In this case, Cmaj and Gmaj are used for 4 beats each, then Amin and Fmaj are used for 2 beats each.
 
 `beats-per` can also accept a single number that is used for each condition, so `--beats-per 4` is equivalent to `--beats-per 4,4,4,4` in the example above. 
 
@@ -265,14 +269,14 @@ metronome --bpm <bpm> --drop-beats <on,off>
 metronome --bpm <bpm> --drop-beats <on_and_off>
 ```
 
-#### Random Beat Dropping:
+#### (Planned) Random Beat Dropping:
 Mute a specified percentage of beats randomly during playback.
 
 ```sh
 metronome --bpm <bpm> --drop-rate <drop_rate>
 ```
 
-#### BPM Ramp:
+#### (Planned) BPM Ramp:
 Ramp the bpm from a start to an end tempo and back again, at a given rate.
 
 ```sh
@@ -296,7 +300,7 @@ Play the given notes instead of a click. Can play from 1 to 4 notes at a time.
 metronome --bpm <bpm> --harmonic --tones <tones>
 ```
 
-#### Harmonic Click with Chord Progression:
+#### (Planned) Harmonic Click with Chord Progression:
 Play the given chord progression instead of a click. Like playing tones instead of a click, but allows defining groups of tones, the order they are played, and the number of beats each plays for.
 
 ```sh

@@ -7,7 +7,7 @@ pub mod piano;
 
 pub struct Synth {
     pub sequencer: Sequencer,
-    pub time_events: Vec<EventId>,
+    _time_events: Vec<EventId>,
     _drone_events: Vec<EventId>,
 }
 
@@ -16,12 +16,16 @@ impl Synth {
         let mut sequencer = Sequencer::new(true, 1);
 
         // Time events are the metronome click. They can be hihat or piano notes.
-        let time_events = match &config.tones {
+        let _time_events = match &config.tones {
             Some(tone_enum) => match tone_enum {
                 // Harmonic metronome with unchanging tones
-                Tones::List(tone_list) => {
-                    piano::add_time_notes(&tone_list, &mut sequencer, 0.2, config.bpm)
-                }
+                Tones::List(tone_list) => piano::add_time_notes(
+                    &tone_list,
+                    &mut sequencer,
+                    0.2,
+                    config.bpm,
+                    config.drop_beats,
+                ),
 
                 // Harmonic metronome with a changing chord progression.
                 Tones::Map(tone_map) => {
@@ -31,6 +35,7 @@ impl Synth {
                         &mut sequencer,
                         0.1,
                         config.bpm,
+                        config.drop_beats,
                     )
                 }
             },
@@ -47,7 +52,7 @@ impl Synth {
 
         Synth {
             sequencer,
-            time_events,
+            _time_events,
             _drone_events,
         }
     }

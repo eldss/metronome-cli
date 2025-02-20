@@ -21,7 +21,7 @@ pub fn electric_piano(
 ) -> Box<dyn AudioUnit> {
     // Convert note string to frequency.
     let freq: f32 = helpers::note_to_frequency(note).unwrap_or(0.0);
-    let voice = hammond_hz(freq) * constant(0.1) >> lowpass_hz(5000.0, 1.0);
+    let voice = hammond_hz(freq) * constant(0.025) >> lowpass_hz(1000.0, 1.0);
 
     // Frequency correction: use a reference (say, C4 = 261.63 Hz)
     // Lower notes (smaller freq) get a boost so that C2 sounds as loud as C4–C5.
@@ -45,9 +45,17 @@ pub fn electric_piano(
         let rms = (energy / dur).sqrt();
         let env_gain = if rms > 0.0 { 1.0 / rms } else { 1.0 };
 
+        // Create a one-shot envelope with a sine-shaped attack:
+        // For t < attack_time, amplitude = sin( (t/attack_time) * (pi/2) );
+        // For t between attack_time and burst_duration, amplitude = exp( - (t - attack_time) * decay_factor );
+        // Otherwise, output 0.
+        let attack_time = 0.001;
         let env = envelope(move |t: f32| {
-            if t < dur {
-                f32::exp(-t * decay_factor)
+            if t < attack_time {
+                // Sine ramp from 0 to 1.
+                (t / attack_time * std::f32::consts::FRAC_PI_2).sin()
+            } else if t < dur {
+                f32::exp(-(t - attack_time) * decay_factor)
             } else {
                 0.0
             }
@@ -116,6 +124,7 @@ pub fn add_drone_notes(notes: &[String], sequencer: &mut Sequencer) -> Vec<Event
 /// * `sequencer` - A mutable reference to the sequencer to which the notes should be added.
 /// * `note_duration` - The duration (in seconds) for which each note should play.
 /// * `bpm` - The beats per minute for the sequencer.
+/// * `drop_beats` - An optional tuple of two u8 values representing the number of on and off beats to drop.
 ///
 /// # Returns
 ///
@@ -125,20 +134,52 @@ pub fn add_time_notes(
     sequencer: &mut Sequencer,
     note_duration: f32,
     bpm: u32,
+    drop_beats: Option<(u8, u8)>,
 ) -> Vec<EventId> {
     let mut events: Vec<EventId> = Vec::new();
-    let beat_start = 0.0;
     let beat_period = 60.0 / (bpm as f64);
 
-    for note in notes {
-        events.push(sequencer.push(
-            beat_start,
-            beat_start + beat_period,
-            Fade::Smooth,
-            0.001,
-            0.001,
-            electric_piano(note, Some(note_duration), notes.len()),
-        ));
+    if let Some((on, off)) = drop_beats {
+        let mut beat_start = 0.0;
+
+        // Push on beats
+        for _ in 0..on {
+            for note in notes {
+                events.push(sequencer.push(
+                    beat_start,
+                    beat_start + beat_period,
+                    Fade::Smooth,
+                    0.001,
+                    0.001,
+                    electric_piano(note, Some(note_duration), notes.len()),
+                ));
+            }
+            beat_start += beat_period;
+        }
+
+        // Push off beats
+        for _ in 0..off {
+            events.push(sequencer.push(
+                beat_start,
+                beat_start + beat_period,
+                Fade::Smooth,
+                0.001,
+                0.001,
+                Box::new(zero()),
+            ));
+            beat_start += beat_period;
+        }
+    } else {
+        for note in notes {
+            events.push(sequencer.push(
+                0.0,
+                beat_period,
+                Fade::Smooth,
+                0.001,
+                0.001,
+                electric_piano(note, Some(note_duration), notes.len()),
+            ));
+        }
     }
 
     events

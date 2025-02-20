@@ -36,7 +36,14 @@ pub fn initialize_audio_stream(
 
     // Extract the sample rate as a f64 for calculations and build the output stream
     let sample_rate = stream_config.sample_rate.0 as f64;
-    let is_harmonic = app_config.harmonic;
+
+    // Ensure we capture the correct number of beats in a loop
+    let beats_per_sequence = if let Some((on, off)) = app_config.drop_beats {
+        on + off
+    } else {
+        1
+    };
+
     let stream = device.build_output_stream(
         &stream_config,
         move |data: &mut [f32], _: &cpal::OutputCallbackInfo| {
@@ -52,14 +59,8 @@ pub fn initialize_audio_stream(
             // Calculate the number of samples per beat.
             let current_bpm = bpm.load(Ordering::Relaxed);
             let beat_period = 60.0 / (current_bpm as f64);
-            let num_beats_in_cycle = synth_lock.time_events.len() as f64;
-
-            let seq_samples = if is_harmonic {
-                // TODO: This will get more complex with Tones map.
-                (beat_period * sample_rate).round() as u64
-            } else {
-                (beat_period * sample_rate * num_beats_in_cycle).round() as u64
-            };
+            let seq_samples =
+                (beat_period * sample_rate * beats_per_sequence as f64).round() as u64;
 
             // Process each frame in the output buffer.
             for frame in data.chunks_mut(stream_config.channels as usize) {
