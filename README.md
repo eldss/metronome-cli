@@ -40,7 +40,7 @@ We prefer to keep the core metronome simple, in favor of more complex features t
 
 ## Installation
 
-### (Planned) Direct Download
+### Direct Download
 
 You can download a precompiled binary from the [GitHub Releases](https://github.com/eldss/metronome-cli/releases) page.
 
