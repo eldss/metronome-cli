@@ -5,7 +5,6 @@ mod constants;
 mod helpers;
 mod metronome;
 mod synth;
-mod terminal;
 
 use cli::CliOptions;
 use config::AppConfig;

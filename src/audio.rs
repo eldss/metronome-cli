@@ -97,10 +97,9 @@ fn get_audio_device() -> Result<Device, Box<dyn Error>> {
 /// Retrieves the stream configuration for the given audio device.
 fn get_stream_config(device: &Device) -> Result<StreamConfig, Box<dyn Error>> {
     // Retrieve the supported output configurations.
-    let supported_configs = device.supported_output_configs()?;
+    let mut supported_configs = device.supported_output_configs()?;
     let supported_config = supported_configs
-        .filter(|config| config.sample_format() == SampleFormat::F32)
-        .next()
+        .find(|config| config.sample_format() == SampleFormat::F32)
         .ok_or("no supported output configuration with f32 sample format")?;
 
     // Choose the configuration with the maximum sample rate.

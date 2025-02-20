@@ -20,7 +20,7 @@ impl Synth {
             Some(tone_enum) => match tone_enum {
                 // Harmonic metronome with unchanging tones
                 Tones::List(tone_list) => piano::add_time_notes(
-                    &tone_list,
+                    tone_list,
                     &mut sequencer,
                     0.2,
                     config.bpm,

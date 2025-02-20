@@ -109,7 +109,7 @@ impl AppConfig {
                 }
 
                 for note in &parsed_list {
-                    if !note_re.is_match(&note) {
+                    if !note_re.is_match(note) {
                         return Err(format!(
                             "Invalid note format for {}. Expected format: <note><octave> where <note> is a letter A-G, followed by an optional # or b, and <octave> is a number 1-6",
                             note
@@ -144,7 +144,7 @@ impl AppConfig {
                     }
                     // Above only checks start of string. Need to check all notes.
                     for note in &parsed_list {
-                        if !note_re.is_match(&note) {
+                        if !note_re.is_match(note) {
                             return Err(format!(
                                 "Invalid note format for {}. Expected format: <note><octave> where <note> is a letter A-G, followed by an optional # or b, and <octave> is a number 1-6",
                                 note
@@ -317,7 +317,6 @@ impl AppConfig {
 }
 
 mod tests {
-    use super::AppConfig;
     use crate::cli::CliOptions;
     use rstest::{fixture, rstest};
 
@@ -339,7 +338,7 @@ mod tests {
 
     #[rstest]
     fn bpm_is_a_number(base_cli: CliOptions) {
-        let config = AppConfig::from_cli(base_cli).unwrap();
+        let config = super::AppConfig::from_cli(base_cli).unwrap();
         assert_eq!(config.bpm, 120);
     }
 
@@ -349,7 +348,7 @@ mod tests {
             drop_beats: Some(String::from("4,8")),
             ..base_cli
         };
-        let config = AppConfig::from_cli(cli).unwrap();
+        let config = super::AppConfig::from_cli(cli).unwrap();
         assert_eq!(config.drop_beats, Some((4, 8)));
     }
 
@@ -359,7 +358,7 @@ mod tests {
             drop_beats: Some(String::from("4")),
             ..base_cli
         };
-        let config = AppConfig::from_cli(cli).unwrap();
+        let config = super::AppConfig::from_cli(cli).unwrap();
         assert_eq!(config.drop_beats, Some((4, 4)));
     }
 
@@ -369,7 +368,7 @@ mod tests {
             drop_rate: Some(50),
             ..base_cli
         };
-        let config = AppConfig::from_cli(cli).unwrap();
+        let config = super::AppConfig::from_cli(cli).unwrap();
         assert_eq!(config.drop_rate, Some(50));
     }
 
@@ -379,7 +378,7 @@ mod tests {
             ramp: Some(150),
             ..base_cli
         };
-        let config = AppConfig::from_cli(cli).unwrap();
+        let config = super::AppConfig::from_cli(cli).unwrap();
         assert_eq!(config.ramp, Some(150));
     }
 
@@ -389,7 +388,7 @@ mod tests {
             change_rate: Some(50),
             ..base_cli
         };
-        let config = AppConfig::from_cli(cli).unwrap();
+        let config = super::AppConfig::from_cli(cli).unwrap();
         assert_eq!(config.change_rate, Some(50));
     }
 
@@ -405,7 +404,7 @@ mod tests {
             drone: Some(String::from(drone)),
             ..base_cli
         };
-        let config = AppConfig::from_cli(cli).unwrap();
+        let config = super::AppConfig::from_cli(cli).unwrap();
         assert_eq!(
             config.drone,
             Some(expected.iter().map(|s| s.to_string()).collect())
@@ -426,7 +425,7 @@ mod tests {
             harmonic: true,
             ..base_cli
         };
-        let config = AppConfig::from_cli(cli);
+        let config = super::AppConfig::from_cli(cli);
         println!("{:?}", config);
         assert!(config.is_err());
     }
@@ -444,7 +443,7 @@ mod tests {
             harmonic: true,
             ..base_cli
         };
-        let config = AppConfig::from_cli(cli).unwrap();
+        let config = super::AppConfig::from_cli(cli).unwrap();
         assert_eq!(
             config.tones,
             Some(super::Tones::List(
@@ -467,7 +466,7 @@ mod tests {
             harmonic: true,
             ..base_cli
         };
-        let config = AppConfig::from_cli(cli);
+        let config = super::AppConfig::from_cli(cli);
         assert!(config.is_err());
     }
 
@@ -488,7 +487,7 @@ mod tests {
             harmonic: true,
             ..base_cli
         };
-        let config = AppConfig::from_cli(cli).unwrap();
+        let config = super::AppConfig::from_cli(cli).unwrap();
         let expected_map: std::collections::HashMap<String, Vec<String>> = expected_keys
             .iter()
             .zip(expected_values.iter())
@@ -513,7 +512,7 @@ mod tests {
             harmonic: true,
             ..base_cli
         };
-        let config = AppConfig::from_cli(cli);
+        let config = super::AppConfig::from_cli(cli);
         assert!(config.is_err());
     }
 
@@ -532,7 +531,7 @@ mod tests {
             harmonic: true,
             ..base_cli
         };
-        let config = AppConfig::from_cli(cli);
+        let config = super::AppConfig::from_cli(cli);
         assert!(config.is_err());
     }
 
@@ -544,7 +543,7 @@ mod tests {
             harmonic: true,
             ..base_cli
         };
-        let config = AppConfig::from_cli(cli).unwrap();
+        let config = super::AppConfig::from_cli(cli).unwrap();
         assert_eq!(
             config.progression,
             Some(
@@ -568,7 +567,7 @@ mod tests {
             harmonic: true,
             ..base_cli
         };
-        let config = AppConfig::from_cli(cli);
+        let config = super::AppConfig::from_cli(cli);
         assert!(config.is_err());
     }
 
@@ -580,7 +579,7 @@ mod tests {
             harmonic: true,
             ..base_cli
         };
-        let config = AppConfig::from_cli(cli).unwrap();
+        let config = super::AppConfig::from_cli(cli).unwrap();
         assert_eq!(
             config.progression,
             Some(
@@ -601,7 +600,7 @@ mod tests {
             harmonic: true,
             ..base_cli
         };
-        let config = AppConfig::from_cli(cli);
+        let config = super::AppConfig::from_cli(cli);
         assert!(config.is_err());
     }
 
@@ -613,7 +612,7 @@ mod tests {
             harmonic: true,
             ..base_cli
         };
-        let config = AppConfig::from_cli(cli);
+        let config = super::AppConfig::from_cli(cli);
         assert!(config.is_err());
     }
 
@@ -624,7 +623,7 @@ mod tests {
             beats_per: Some(String::from("4,3,2")),
             ..base_cli
         };
-        let config = AppConfig::from_cli(cli);
+        let config = super::AppConfig::from_cli(cli);
         assert!(config.is_err());
     }
 
@@ -635,7 +634,7 @@ mod tests {
             drop_rate: Some(50),
             ..base_cli
         };
-        let config = AppConfig::from_cli(cli);
+        let config = super::AppConfig::from_cli(cli);
         assert!(config.is_err());
     }
 
@@ -646,7 +645,7 @@ mod tests {
             ramp: Some(150),
             ..base_cli
         };
-        let config = AppConfig::from_cli(cli);
+        let config = super::AppConfig::from_cli(cli);
         assert!(config.is_err());
     }
 
@@ -656,7 +655,7 @@ mod tests {
             progression: Some(String::from("Cmaj,Dmin,E7")),
             ..base_cli
         };
-        let config = AppConfig::from_cli(cli);
+        let config = super::AppConfig::from_cli(cli);
         assert!(config.is_err());
     }
 
@@ -668,7 +667,7 @@ mod tests {
             harmonic: true,
             ..base_cli
         };
-        let config = AppConfig::from_cli(cli);
+        let config = super::AppConfig::from_cli(cli);
         assert!(config.is_err());
     }
 }
