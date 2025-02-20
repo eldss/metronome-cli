@@ -50,7 +50,7 @@ pub fn initialize_audio_stream(
             // Calculate the number of samples per beat.
             let current_bpm = bpm.load(Ordering::Relaxed);
             let beat_period = 60.0 / (current_bpm as f64);
-            let num_beats_in_cycle = synth_lock.hihat_events.len() as f64;
+            let num_beats_in_cycle = synth_lock.time_events.len() as f64;
 
             let seq_samples = (beat_period * sample_rate * num_beats_in_cycle).round() as u64;
 
