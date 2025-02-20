@@ -10,10 +10,8 @@ use crate::{audio, config::AppConfig, synth};
 pub struct Metronome {
     /// Shared adjustable bpm
     bpm: Arc<AtomicU32>,
-
     /// Shared synth to create sounds
     synth: Arc<Mutex<synth::Synth>>,
-
     /// Shared counter to determine when to reset synth
     sample_counter: Arc<AtomicU64>,
 }
@@ -21,7 +19,7 @@ pub struct Metronome {
 impl Metronome {
     pub fn new(config: &AppConfig) -> Self {
         let bpm = Arc::new(AtomicU32::new(config.bpm));
-        let synth = Arc::new(Mutex::new(synth::Synth::from_config(config)));
+        let synth = Arc::new(Mutex::new(synth::Synth::from(config)));
         let sample_counter = Arc::new(AtomicU64::new(0));
 
         Metronome {

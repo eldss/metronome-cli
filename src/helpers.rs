@@ -2,7 +2,7 @@ use std::{fmt::Display, str::FromStr};
 
 use crate::constants::NOTE_FREQUENCIES;
 
-/// Converts a validated note string (e.g., "C4", "G#3", "Bb5") into its frequency in Hz.
+/// Converts a note string (e.g., "C4", "G#3", "Bb5") into its frequency in Hz.
 /// Supports notes from Cb2 to B#5 in standard equal temperament (A4 = 440 Hz).
 ///
 /// # Arguments

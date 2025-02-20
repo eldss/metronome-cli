@@ -24,7 +24,7 @@ pub fn electric_piano(note: &str, duration: Option<f64>) -> Box<dyn AudioUnit> {
     let gain = (reference_freq / freq.max(1.0)).powf(1.5).min(2.0);
 
     // Apply the compensation factor to balance volume
-    let voice = hammond_hz(freq) * constant(0.1 * gain);
+    let voice = hammond_hz(freq) * constant(0.015 * gain);
 
     Box::new(voice)
 }

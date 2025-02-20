@@ -79,7 +79,7 @@ Play at 120 BPM using the default click:
 metronome --bpm 120
 ```
 
-**Lower your volume before playing this for the first time**
+**Seriously, lower your volume before playing this for the first time. Output might be loud for your speakers or headphones.**
 
 
 **Limitations**

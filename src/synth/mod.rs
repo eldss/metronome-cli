@@ -14,7 +14,7 @@ pub struct Synth {
 }
 
 impl Synth {
-    pub fn from_config(config: &AppConfig) -> Self {
+    pub fn from(config: &AppConfig) -> Self {
         let mut sequencer = Sequencer::new(true, 1);
         let hihat_events = hihat::new_hihat_pattern(&mut sequencer, config.bpm, config.drop_beats);
         let _piano_events =
