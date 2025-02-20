@@ -394,8 +394,8 @@ mod tests {
     }
 
     #[rstest]
-    #[case("A1", vec!["A1"])]
-    #[case("A#1,Ab2,Bb3,C#4", vec!["A#1", "Ab2", "Bb3", "C#4"])]
+    #[case("A2", vec!["A2"])]
+    #[case("A#5,Ab2,Bb3,C#4", vec!["A#5", "Ab2", "Bb3", "C#4"])]
     fn drone_is_a_vec_of_strings(
         base_cli: CliOptions,
         #[case] drone: &str,
@@ -432,8 +432,8 @@ mod tests {
     }
 
     #[rstest]
-    #[case("A1", vec!["A1"])]
-    #[case("A#1,Ab2,Bb3,C#4", vec!["A#1", "Ab2", "Bb3", "C#4"])]
+    #[case("A2", vec!["A2"])]
+    #[case("A#5,Ab2,Bb3,C#4", vec!["A#5", "Ab2", "Bb3", "C#4"])]
     fn tones_list_is_a_vec_of_strings(
         base_cli: CliOptions,
         #[case] tones: &str,
@@ -472,8 +472,8 @@ mod tests {
     }
 
     #[rstest]
-    #[case("Cmaj(A1 B2 C3)", vec!["Cmaj"], vec![vec!["A1", "B2", "C3"]], "Cmaj")]
-    #[case("Cmaj(A1 B2 C3),yyy(Ab3 G#2)", vec!["Cmaj", "yyy"], vec![vec!["A1", "B2", "C3"], vec!["Ab3", "G#2"]], "Cmaj,yyy,Cmaj")]
+    #[case("Cmaj(A5 B2 C3)", vec!["Cmaj"], vec![vec!["A5", "B2", "C3"]], "Cmaj")]
+    #[case("Cmaj(A5 B2 C3),yyy(Ab3 G#2)", vec!["Cmaj", "yyy"], vec![vec!["A5", "B2", "C3"], vec!["Ab3", "G#2"]], "Cmaj,yyy,Cmaj")]
     fn tones_map_is_a_hashmap_of_strings(
         base_cli: CliOptions,
         #[case] tones: &str,

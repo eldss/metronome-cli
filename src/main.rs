@@ -9,6 +9,7 @@ mod terminal;
 
 use cli::CliOptions;
 use config::AppConfig;
+use metronome::Metronome;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Parse CLI Options
@@ -17,7 +18,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Convert options into app config
     let config = AppConfig::from_cli(cli_options)?;
 
-    metronome::play(&config)?;
+    let metronome = Metronome::new(&config);
+
+    metronome.play()?;
 
     Ok(())
 }

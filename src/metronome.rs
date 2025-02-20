@@ -1,46 +1,49 @@
 use std::sync::{
-    atomic::{AtomicU32, AtomicU64, Ordering},
+    atomic::{AtomicU32, AtomicU64},
     Arc, Mutex,
 };
 
 use cpal::traits::StreamTrait;
-use fundsp::hacker::Sequencer;
 
-use crate::{audio, config::AppConfig, synth::hihat};
+use crate::{audio, config::AppConfig, synth};
 
-/// Sets up the audio stream and runs the metronome continuously.
-pub fn play(config: &AppConfig) -> Result<(), Box<dyn std::error::Error>> {
-    // Set up shared state for the audio stream
-    let bpm = initialize_bpm(config.bpm);
-    let sequence = initialize_sequence(bpm.clone());
-    let sample_counter = initialize_sample_counter();
+pub struct Metronome {
+    /// Shared adjustable bpm
+    bpm: Arc<AtomicU32>,
 
-    // Initialize the audio stream and start playback
-    let stream =
-        audio::initialize_audio_stream(bpm.clone(), sequence.clone(), sample_counter.clone())?;
-    stream.play()?;
+    /// Shared synth to create sounds
+    synth: Arc<Mutex<synth::Synth>>,
 
-    // Block until the user presses Enter (the stream runs on the CPAL thread).
-    wait_for_user_input();
-
-    Ok(())
+    /// Shared counter to determine when to reset synth
+    sample_counter: Arc<AtomicU64>,
 }
 
-/// Initializes the BPM as an atomic reference-counted value.
-fn initialize_bpm(bpm_value: u32) -> Arc<AtomicU32> {
-    Arc::new(AtomicU32::new(bpm_value))
-}
+impl Metronome {
+    pub fn new(config: &AppConfig) -> Self {
+        let bpm = Arc::new(AtomicU32::new(config.bpm));
+        let synth = Arc::new(Mutex::new(synth::Synth::from_config(config)));
+        let sample_counter = Arc::new(AtomicU64::new(0));
 
-/// Initializes the hi-hat sequence as an atomic reference-counted mutex.
-fn initialize_sequence(bpm: Arc<AtomicU32>) -> Arc<Mutex<Sequencer>> {
-    Arc::new(Mutex::new(hihat::hihat_pattern(
-        bpm.load(Ordering::Relaxed),
-    )))
-}
+        Metronome {
+            bpm,
+            synth,
+            sample_counter,
+        }
+    }
 
-/// Initializes the sample counter as an atomic reference-counted value.
-fn initialize_sample_counter() -> Arc<AtomicU64> {
-    Arc::new(AtomicU64::new(0))
+    /// Sets up the audio stream and runs the metronome continuously.
+    pub fn play(&self) -> Result<(), Box<dyn std::error::Error>> {
+        let stream = audio::initialize_audio_stream(
+            self.bpm.clone(),
+            self.synth.clone(),
+            self.sample_counter.clone(),
+        )?;
+        stream.play()?;
+
+        wait_for_user_input();
+
+        Ok(())
+    }
 }
 
 /// Blocks until the user presses Enter.

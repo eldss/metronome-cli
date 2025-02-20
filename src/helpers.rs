@@ -1,5 +1,23 @@
 use std::{fmt::Display, str::FromStr};
 
+use crate::constants::NOTE_FREQUENCIES;
+
+/// Converts a validated note string (e.g., "C4", "G#3", "Bb5") into its frequency in Hz.
+/// Supports notes from Cb2 to B#5 in standard equal temperament (A4 = 440 Hz).
+///
+/// # Arguments
+/// * `note` - A string slice representing the note name (e.g., "C4", "A#3").
+///
+/// # Returns
+/// * `Some(f64)` - The frequency of the note in Hz if valid.
+/// * `None` - If an invalid note string is passed.
+pub fn note_to_frequency(note: &str) -> Option<f32> {
+    NOTE_FREQUENCIES
+        .iter()
+        .find(|&&(n, _)| n == note) // Search for matching note name
+        .map(|&(_, freq)| freq) // Extract the frequency
+}
+
 /// Validates that the given value is within the given range and returns it.
 pub fn validate_and_extract<T>(val: T, low: T, high: T, param_name: &str) -> Result<T, String>
 where
@@ -65,6 +83,39 @@ where
 mod tests {
     use super::*;
     use rstest::rstest;
+
+    #[rstest]
+    #[case("Cb2", Some(61.74))]
+    #[case("A4", Some(440.0))]
+    #[case("C4", Some(261.63))]
+    #[case("G#3", Some(207.65))]
+    #[case("Bb5", Some(932.33))]
+    #[case("Cb2", Some(61.74))]
+    fn test_note_to_frequency(#[case] note: &str, #[case] expected: Option<f32>) {
+        let result = note_to_frequency(note).map(|freq| (freq * 100.0).round() / 100.0);
+        assert_eq!(result, expected);
+    }
+
+    #[rstest]
+    #[case("Cb3", "B2")]
+    #[case("D#4", "Eb4")]
+    #[case("Ab3", "G#3")]
+    #[case("Fb2", "E2")]
+    #[case("E#2", "F2")]
+    fn test_correct_enharmonics(#[case] note1: &str, #[case] note2: &str) {
+        assert_eq!(note_to_frequency(note1), note_to_frequency(note2))
+    }
+
+    #[rstest]
+    #[case("H4", None)]
+    #[case("D#0", None)]
+    #[case("", None)]
+    #[case("A#", None)]
+    #[case("G#6", None)]
+    fn test_note_to_frequency_invalid(#[case] note: &str, #[case] expected: Option<f32>) {
+        let result = note_to_frequency(note);
+        assert_eq!(result, expected);
+    }
 
     #[rstest]
     #[case(50, 30, 100, "bpm", Ok(50))]

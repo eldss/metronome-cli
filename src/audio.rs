@@ -11,6 +11,8 @@ use std::{
     },
 };
 
+use crate::synth;
+
 /// Initializes the audio host, selects the default output device, and builds an output stream.
 ///
 /// # Arguments
@@ -25,7 +27,7 @@ use std::{
 /// * `Err(Box<dyn Error>)` - An error if the stream couldn't be created.
 pub fn initialize_audio_stream(
     bpm: Arc<AtomicU32>,
-    sequencer: Arc<Mutex<Sequencer>>,
+    synth: Arc<Mutex<synth::Synth>>,
     sample_counter: Arc<AtomicU64>,
 ) -> Result<Stream, Box<dyn Error>> {
     let device = get_audio_device()?;
@@ -37,26 +39,34 @@ pub fn initialize_audio_stream(
         &config,
         move |data: &mut [f32], _: &cpal::OutputCallbackInfo| {
             // Lock the sequencer for thread-safe access.
-            let mut seq_lock = sequencer.lock().unwrap();
+            let mut synth_lock = match synth.lock() {
+                Ok(lock) => lock,
+                Err(poisoned) => {
+                    eprintln!("Failed to lock sequencer: {:?}", poisoned);
+                    return;
+                }
+            };
 
             // Calculate the number of samples per beat.
             let current_bpm = bpm.load(Ordering::Relaxed);
             let beat_period = 60.0 / (current_bpm as f64);
-            let beat_samples = (beat_period * sample_rate).round() as u64;
+            let num_beats_in_cycle = synth_lock.hihat_events.len() as f64;
+
+            let seq_samples = (beat_period * sample_rate * num_beats_in_cycle).round() as u64;
 
             // Process each frame in the output buffer.
             for frame in data.chunks_mut(config.channels as usize) {
                 // Retrieve the next sample from the sequencer.
-                let sample = seq_lock.get_mono();
+                let sample = synth_lock.sequencer.get_mono();
                 for sample_out in frame.iter_mut() {
                     *sample_out = sample as f32;
                 }
 
                 // Update the sample counter and reset the sequencer if a beat has completed.
                 let prev_count = sample_counter.fetch_add(1, Ordering::Relaxed) + 1;
-                if prev_count >= beat_samples {
-                    seq_lock.reset();
-                    sample_counter.fetch_sub(beat_samples, Ordering::Relaxed);
+                if prev_count >= seq_samples {
+                    synth_lock.sequencer.reset();
+                    sample_counter.fetch_sub(seq_samples, Ordering::Relaxed);
                 }
             }
         },
