@@ -30,11 +30,12 @@ impl Metronome {
     }
 
     /// Sets up the audio stream and runs the metronome continuously.
-    pub fn play(&self) -> Result<(), Box<dyn std::error::Error>> {
+    pub fn play(&self, config: &AppConfig) -> Result<(), Box<dyn std::error::Error>> {
         let stream = audio::initialize_audio_stream(
             self.bpm.clone(),
             self.synth.clone(),
             self.sample_counter.clone(),
+            config,
         )?;
         stream.play()?;
 

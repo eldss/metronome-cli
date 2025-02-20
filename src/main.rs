@@ -20,7 +20,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let metronome = Metronome::new(&config);
 
-    metronome.play()?;
+    metronome.play(&config)?;
 
     Ok(())
 }

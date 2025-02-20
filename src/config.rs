@@ -19,7 +19,7 @@ pub struct AppConfig {
     pub tones: Option<Tones>,
     pub progression: Option<Vec<String>>,
     pub beats_per: Option<Vec<u8>>,
-    pub harmonic: bool,
+    pub harmonic: bool, // TODO: I don't think I actually need this because I can use tones.is_some().
 }
 
 #[derive(Clone, Debug, PartialEq)]

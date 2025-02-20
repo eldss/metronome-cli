@@ -11,7 +11,7 @@ use std::{
     },
 };
 
-use crate::synth;
+use crate::{config::AppConfig, synth};
 
 /// Initializes the audio host, selects the default output device, and builds an output stream.
 ///
@@ -29,14 +29,16 @@ pub fn initialize_audio_stream(
     bpm: Arc<AtomicU32>,
     synth: Arc<Mutex<synth::Synth>>,
     sample_counter: Arc<AtomicU64>,
+    app_config: &AppConfig,
 ) -> Result<Stream, Box<dyn Error>> {
     let device = get_audio_device()?;
-    let config = get_stream_config(&device)?;
+    let stream_config = get_stream_config(&device)?;
 
     // Extract the sample rate as a f64 for calculations and build the output stream
-    let sample_rate = config.sample_rate.0 as f64;
+    let sample_rate = stream_config.sample_rate.0 as f64;
+    let is_harmonic = app_config.harmonic;
     let stream = device.build_output_stream(
-        &config,
+        &stream_config,
         move |data: &mut [f32], _: &cpal::OutputCallbackInfo| {
             // Lock the sequencer for thread-safe access.
             let mut synth_lock = match synth.lock() {
@@ -52,10 +54,15 @@ pub fn initialize_audio_stream(
             let beat_period = 60.0 / (current_bpm as f64);
             let num_beats_in_cycle = synth_lock.time_events.len() as f64;
 
-            let seq_samples = (beat_period * sample_rate * num_beats_in_cycle).round() as u64;
+            let seq_samples = if is_harmonic {
+                // TODO: This will get more complex with Tones map.
+                (beat_period * sample_rate).round() as u64
+            } else {
+                (beat_period * sample_rate * num_beats_in_cycle).round() as u64
+            };
 
             // Process each frame in the output buffer.
-            for frame in data.chunks_mut(config.channels as usize) {
+            for frame in data.chunks_mut(stream_config.channels as usize) {
                 // Retrieve the next sample from the sequencer.
                 let sample = synth_lock.sequencer.get_mono();
                 for sample_out in frame.iter_mut() {
