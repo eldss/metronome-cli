@@ -40,7 +40,7 @@ We prefer to keep the core metronome simple, in favor of more complex features t
 
 ## Installation
 
-### Direct Download
+### (Planned) Direct Download
 
 You can download a precompiled binary from the [GitHub Releases](https://github.com/eldss/metronome-cli/releases) page.
 
@@ -48,7 +48,7 @@ You can download a precompiled binary from the [GitHub Releases](https://github.
 2. Download the appropriate executable for your operating system.
 3. Move the file to a directory in your system's `PATH` (e.g., `/usr/local/bin` on Linux/macOS or `C:\Program Files\metronome-cli\` on Windows).
 
-### Using Cargo
+### (Planned) Using Cargo
 
 To install the metronome CLI with Cargo, ensure you have [Rust](https://www.rust-lang.org/) installed and run:
 
@@ -59,6 +59,8 @@ cargo install metronome-cli
 ### Compile Locally
 
 Alternatively, you can build from source:
+
+_Currently this is the only option until the package is developed further_
 
 ```sh
 git clone https://github.com/eldss/metronome-cli.git
