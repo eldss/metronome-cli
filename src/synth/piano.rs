@@ -21,7 +21,7 @@ pub fn electric_piano(
 ) -> Box<dyn AudioUnit> {
     // Convert note string to frequency.
     let freq: f32 = helpers::note_to_frequency(note).unwrap_or(0.0);
-    let voice = hammond_hz(freq) * constant(0.05);
+    let voice = hammond_hz(freq) * constant(0.1) >> lowpass_hz(5000.0, 1.0);
 
     // Frequency correction: use a reference (say, C4 = 261.63 Hz)
     // Lower notes (smaller freq) get a boost so that C2 sounds as loud as C4–C5.

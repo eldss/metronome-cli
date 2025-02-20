@@ -9,7 +9,7 @@ use crate::constants::NOTE_FREQUENCIES;
 /// * `note` - A string slice representing the note name (e.g., "C4", "A#3").
 ///
 /// # Returns
-/// * `Some(f64)` - The frequency of the note in Hz if valid.
+/// * `Some(f32)` - The frequency of the note in Hz if valid.
 /// * `None` - If an invalid note string is passed.
 pub fn note_to_frequency(note: &str) -> Option<f32> {
     NOTE_FREQUENCIES

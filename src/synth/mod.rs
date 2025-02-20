@@ -1,5 +1,3 @@
-use core::f64;
-
 use fundsp::prelude::*;
 
 use crate::config::{AppConfig, Tones};

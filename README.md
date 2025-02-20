@@ -70,7 +70,7 @@ cargo build --release
 
 ### Basic Metronome
 
-Play at 120 BPM using the default click:
+Play at 120 BPM:
 
 **Lower your volume before playing this for the first time**
 
@@ -79,8 +79,11 @@ Play at 120 BPM using the default click:
 metronome --bpm 120
 ```
 
-**Seriously, lower your volume before playing this for the first time. Output might be loud for your speakers or headphones.**
+Seriously, lower your volume before playing this for the first time. I have taken pains to balance the mix of sounds, but depending on your own configuration and the options chosen, the output might be loud for your speakers or headphones. This will become more evident when using the drone feature.
 
+I have noticed in testing on my own computer that USB headphones, at least the ones I own, distort the audio in weird ways. The click should sound similar to a closed hi-hat, and the harmonic tones should resemble a hammond organ, and be audible. If that isn't what you are hearing, try an analog connection or direct speaker output. 
+
+If you have suggestions to improve the sound design and/or listening experience I would love to hear them! I want to make this tool usable for real musicians (who also happen to know how to use CLI tools!).
 
 **Limitations**
 
@@ -175,6 +178,8 @@ You can also play a chord as a drone (C minor here):
 ```sh
 metronome --bpm 100 --drone C3,Eb3,G3
 ```
+
+I find higher octaves can start to wear on my ears. Consider experimenting with lower octaves first. And turn your volume down the first time you try a new setting, just in case. I have tried my best to balance the mix in a reasonable way, but I have only tested it on my own computer. Protecting your speakers and your ears is your responsibility!
 
 **Limitations**
 

@@ -1,30 +1,37 @@
 use fundsp::prelude::*;
 
-/// Constructs a hi‑hat synth that produces a single 50ms burst.
+/// Constructs a hi‑hat synth that produces a single 50ms burst with a sine-shaped attack.
 ///
 /// Call `reset()` on the returned unit to retrigger the burst.
 pub fn hihat_synth() -> Box<dyn AudioUnit> {
-    // Burst length in seconds
+    // Burst length in seconds.
     let burst_duration = 0.05;
-    // Controls exponential decay (higher means faster decay)
+    // Short attack duration (in seconds).
+    let attack_time = 0.005;
+    // Controls exponential decay (higher means faster decay) for the remainder.
     let decay_factor = 60.0;
-    // Bandpass center frequency in Hz
-    let bp_center = 8000.0;
-    // Bandpass Q (resonance factor)
-    let bp_q = 1.5;
+    // Bandpass center frequency in Hz.
+    let bp_center = 5000.0;
+    // Bandpass Q (resonance factor).
+    let bp_q = 0.5;
 
-    // Create a one-shot envelope:
-    // For t < burst_duration, amplitude = exp(-t * decay_factor); afterwards, 0.
+    // Create a one-shot envelope with a sine-shaped attack:
+    // For t < attack_time, amplitude = sin( (t/attack_time) * (pi/2) );
+    // For t between attack_time and burst_duration, amplitude = exp( - (t - attack_time) * decay_factor );
+    // Otherwise, output 0.
     let env = envelope(move |t: f32| {
-        if t < burst_duration {
-            f32::exp(-t * decay_factor)
+        if t < attack_time {
+            // Sine ramp from 0 to 1.
+            (t / attack_time * std::f32::consts::FRAC_PI_2).sin()
+        } else if t < burst_duration {
+            f32::exp(-(t - attack_time) * decay_factor)
         } else {
             0.0
         }
     });
 
-    // Compose the hi-hat sound:
-    // Multiply white noise by the envelope and then filter with a bandpass.
+    // Compose the hi‑hat sound:
+    // Multiply white noise by a constant amplitude, then apply the envelope and filter.
     Box::new(noise() * constant(0.1) * env >> bandpass_hz(bp_center, bp_q))
 }
 
