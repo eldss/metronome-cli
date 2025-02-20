@@ -20,11 +20,11 @@ pub fn electric_piano(note: &str, duration: Option<f64>) -> Box<dyn AudioUnit> {
     // Frequency-dependent loudness compensation (psychoacoustic adjustment)
     // Mid-range reference (A4)
     let reference_freq = 440.0;
-    // Prevent division by zero with max, and cap gain at 2.0
-    let gain = (reference_freq / freq.max(1.0)).powf(1.0).min(3.0);
+    // Prevent division by zero with max, and cap gain
+    let gain = (reference_freq / freq.max(1.0)).powf(1.5).min(2.0);
 
     // Apply the compensation factor to balance volume
-    let voice = hammond_hz(freq) * constant(0.2 * gain);
+    let voice = hammond_hz(freq) * constant(0.1 * gain);
 
     Box::new(voice)
 }

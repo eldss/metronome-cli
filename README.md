@@ -72,9 +72,15 @@ cargo build --release
 
 Play at 120 BPM using the default click:
 
+**Lower your volume before playing this for the first time**
+
+
 ```sh
 metronome --bpm 120
 ```
+
+**Lower your volume before playing this for the first time**
+
 
 **Limitations**
 
