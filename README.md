@@ -159,7 +159,7 @@ While playing
 Play a continuous drone note on top of a basic metronome click (middle C here):
 
 ```sh
-metronome --bpm 100 --drone C3
+metronome --bpm 100 --drone C4
 ```
 
 Tones are generated internally and cannot currently be changed. But we hope to add some customization options in the near future.
@@ -223,7 +223,7 @@ or
 - If you use the same tone chord key multiple times, the last one defined will be the one used.
 - If `beats-per` is not a single number, then the length of the `progression` and `beats-per` arguments must be equal.
 - If `progression` is present, `beats-per` must also be present. Further, `tones` is expected to take the form of `<ID>(T T T T)` with commas between each definition. Internal tones must be separated by spaces in this case
-- Tones can range from `Cb2` to `B#6`, where the letter is a capital and represents the note name. The number is the octave number (`C3` is middle C). Sharps and flats are supported using `#` for sharp and `b` for flat, as in `C#4` and `Db4`.
+- Tones can range from `Cb2` to `B#6`, where the letter is a capital and represents the note name. The number is the octave number (`C4` is middle C). Sharps and flats are supported using `#` for sharp and `b` for flat, as in `C#4` and `Db4`.
 - The number of tones must be between 1 and 4 per chord.
 - Numbers in `beats-per` are whole numbers between 1 and 12.
 
