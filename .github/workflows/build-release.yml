@@ -3,6 +3,7 @@ on:
   push:
     tags:
       - "v*"
+
 jobs:
   release:
     runs-on: ${{ matrix.os }}
@@ -11,11 +12,20 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
       - uses: actions/checkout@v4
-      - name: Set up workaround for curl issues
+      - name: Set up environment variables for specific Rust versions
+        if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
+        shell: bash
         run: |
           if rustc +stable --version --verbose | grep -q '^release: 1\.7[01]\.'; then
             echo CARGO_HTTP_MULTIPLEXING=false >> $GITHUB_ENV
           fi
+      - name: Set up environment variables for Windows
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          if ($null -ne (rustc +stable --version --verbose | Select-String -Pattern '^release: 1\.7[01]\.')) {
+            "CARGO_HTTP_MULTIPLEXING=false" | Out-File -FilePath $env:GITHUB_ENV -Append
+          }
       - name: test build rust project
         uses: lxl66566/rust-simple-release@main
         with:
