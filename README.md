@@ -46,6 +46,8 @@ You can download a precompiled binary from the [GitHub Releases](https://github.
 
 1. Go to the [Releases](https://github.com/eldss/metronome-cli/releases) page.
 2. Download the appropriate executable for your operating system.
+    - For Macs, x86_64 is for Intel chips, aarch64 is for M1 chips.
+    - At this time linux is not supported. But if you have linux, you can probably manage building locally.
 3. Move the file to a directory in your system's `PATH` (e.g., `/usr/local/bin` on Linux/macOS or `C:\Program Files\metronome-cli\` on Windows).
 
 ### (Planned) Using Cargo
