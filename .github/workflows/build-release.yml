@@ -4,22 +4,22 @@ on:
   push:
     branches: [ main ]
     tags: ['v*']
-  pull_request:
 
 jobs:
   build:
     strategy:
       matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        target: [x86_64-unknown-linux-gnu, x86_64-apple-darwin, aarch64-apple-darwin, x86_64-pc-windows-msvc]
         include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
           - os: macos-latest
             target: x86_64-apple-darwin
-            binary: metronome
           - os: macos-latest
             target: aarch64-apple-darwin
-            binary: metronome
           - os: windows-latest
             target: x86_64-pc-windows-msvc
-            binary: metronome.exe
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout code
@@ -32,14 +32,21 @@ jobs:
           override: true
           target: ${{ matrix.target }}
 
-      - name: Build project
+      - name: Install dependencies
+        run: |
+          if [ "${{ matrix.os }}" == "windows-latest" ]; then
+            rustup target add ${{ matrix.target }}
+          fi
+
+      - name: Build
         run: cargo build --release --target ${{ matrix.target }}
 
-      - name: Upload Artifact
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: metronome-${{ matrix.target }}
-          path: target/${{ matrix.target }}/release/${{ matrix.binary }}
+          path: target/${{ matrix.target }}/release/metronome${{ matrix.os == 'windows-latest' && '.exe' || '' }}
+          if-no-files-found: error
 
   release:
     permissions:
@@ -48,45 +55,18 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: Download Artifacts
+      - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
-          path: artifacts
+          path: ./artifacts
 
       - name: Create GitHub Release
-        id: create_release
-        uses: softprops/action-gh-release@v1
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref_name }}
-          name: Release ${{ github.ref_name }}
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
           draft: false
           prerelease: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload macOS (x86_64) Binary
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ github.ref_name }}
-          name: metronome-x86_64-apple-darwin
-          asset_path: artifacts/metronome-x86_64-apple-darwin
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload macOS (aarch64) Binary
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ github.ref_name }}
-          name: metronome-aarch64-apple-darwin
-          asset_path: artifacts/metronome-aarch64-apple-darwin
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload Windows Binary
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ github.ref_name }}
-          name: metronome-x86_64-pc-windows-msvc
-          asset_path: artifacts/metronome-x86_64-pc-windows-msvc
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          files: ./artifacts/*
