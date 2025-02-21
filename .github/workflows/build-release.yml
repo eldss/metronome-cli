@@ -55,8 +55,8 @@ jobs:
         id: create_release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ github.ref }}
-          name: Release ${{ github.ref }}
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
           draft: false
           prerelease: false
         env:
@@ -65,7 +65,7 @@ jobs:
       - name: Upload macOS (x86_64) Binary
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ github.ref }}
+          tag_name: ${{ github.ref_name }}
           name: metronome-x86_64-apple-darwin
           asset_path: artifacts/metronome-x86_64-apple-darwin
         env:
@@ -74,7 +74,7 @@ jobs:
       - name: Upload macOS (aarch64) Binary
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ github.ref }}
+          tag_name: ${{ github.ref_name }}
           name: metronome-aarch64-apple-darwin
           asset_path: artifacts/metronome-aarch64-apple-darwin
         env:
@@ -83,7 +83,7 @@ jobs:
       - name: Upload Windows Binary
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ github.ref }}
+          tag_name: ${{ github.ref_name }}
           name: metronome-x86_64-pc-windows-msvc
           asset_path: artifacts/metronome-x86_64-pc-windows-msvc
         env:
