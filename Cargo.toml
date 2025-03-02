@@ -18,5 +18,6 @@ path = "src/main.rs"
 clap = { version = "4.5.27", features = ["derive"] }
 cpal = "0.15.3"
 fundsp = "0.20.0"
+rand = "0.9.0"
 regex = "1.11.1"
 rstest = "0.24.0"

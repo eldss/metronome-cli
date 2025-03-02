@@ -214,6 +214,14 @@ impl AppConfig {
         match dropped {
             Some(val) => {
                 let parts: Vec<u8> = helpers::parse_comma_separated(&val, param_name)?;
+                for num in &parts {
+                    if *num > 24 || *num < 1 {
+                        return Err(format!(
+                            "Invalid value for {}: {}. Must be between 1 and 24.",
+                            param_name, num
+                        ));
+                    }
+                }
                 match parts.len() {
                     1 => Ok(Some((parts[0], parts[0]))),
                     2 => Ok(Some((parts[0], parts[1]))),
@@ -360,6 +368,21 @@ mod tests {
         };
         let config = super::AppConfig::from_cli(cli).unwrap();
         assert_eq!(config.drop_beats, Some((4, 4)));
+    }
+
+    #[rstest]
+    #[case("4,8,12")]
+    #[case("25")]
+    #[case("1,25")]
+    #[case("-1")]
+    #[case("0")]
+    fn drop_beats_fails_on_invalid_input(base_cli: CliOptions, #[case] input: &str) {
+        let cli = CliOptions {
+            drop_beats: Some(String::from(input)),
+            ..base_cli
+        };
+        let config = super::AppConfig::from_cli(cli);
+        assert!(config.is_err());
     }
 
     #[rstest]

@@ -119,7 +119,7 @@ This is equivalent to:
 metronome --bpm 120 --drop-beats 4,4
 ```
 
-(Planned) Drop 25% of beats randomly:
+Drop 25% of beats randomly:
 
 ```sh
 metronome --bpm 120 --drop-rate 25
@@ -129,8 +129,9 @@ Note that you provide the number of _beats_ not bars. The metronome does not hav
 
 **Limitations**
 
-- Dropped beats are whole numbers ranging from 1 to 32.
+- Dropped beats are whole numbers ranging from 1 to 24.
 - Dropped rates are whole percentages ranging from 1% to 99%.
+- Cannot use both at the same time.
 
 ### (Planned) BPM Ramp (Speed Up/Slow Down)
 
@@ -273,7 +274,7 @@ metronome --bpm <bpm> --drop-beats <on,off>
 metronome --bpm <bpm> --drop-beats <on_and_off>
 ```
 
-#### (Planned) Random Beat Dropping:
+#### Random Beat Dropping:
 Mute a specified percentage of beats randomly during playback.
 
 ```sh

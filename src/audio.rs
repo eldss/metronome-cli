@@ -3,6 +3,7 @@ use cpal::{
     Device, SampleFormat, Stream, StreamConfig,
 };
 use fundsp::prelude::*;
+use rand::Rng;
 use std::{
     error::Error,
     sync::{
@@ -44,6 +45,13 @@ pub fn initialize_audio_stream(
         1
     };
 
+    // Ensure we can drop beats during playback if given
+    let drop_rate = if let Some(rate) = app_config.drop_rate {
+        rate as f64 / 100.0
+    } else {
+        0.0
+    };
+
     let stream = device.build_output_stream(
         &stream_config,
         move |data: &mut [f32], _: &cpal::OutputCallbackInfo| {
@@ -62,6 +70,9 @@ pub fn initialize_audio_stream(
             let seq_samples =
                 (beat_period * sample_rate * beats_per_sequence as f64).round() as u64;
 
+            // Enable random beat drops
+            let mut rng = rand::rng();
+
             // Process each frame in the output buffer.
             for frame in data.chunks_mut(stream_config.channels as usize) {
                 // Retrieve the next sample from the sequencer.
@@ -73,7 +84,10 @@ pub fn initialize_audio_stream(
                 // Update the sample counter and reset the sequencer if a beat has completed.
                 let prev_count = sample_counter.fetch_add(1, Ordering::Relaxed) + 1;
                 if prev_count >= seq_samples {
-                    synth_lock.sequencer.reset();
+                    // Given rate is chance of `true`
+                    if rng.random_bool(1.0 - drop_rate) {
+                        synth_lock.sequencer.reset();
+                    }
                     sample_counter.fetch_sub(seq_samples, Ordering::Relaxed);
                 }
             }
