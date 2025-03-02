@@ -32,7 +32,7 @@ pub fn hihat_synth() -> Box<dyn AudioUnit> {
 
     // Compose the hi‑hat sound:
     // Multiply white noise by a constant amplitude, then apply the envelope and filter.
-    Box::new(noise() * constant(0.1) * env >> bandpass_hz(bp_center, bp_q))
+    Box::new(noise() * constant(0.5) * env >> bandpass_hz(bp_center, bp_q))
 }
 
 /// Creates a new hi-hat pattern and adds it to the given sequencer.
