@@ -1,5 +1,5 @@
 use core::f64;
-use std::{collections::HashMap, hash::Hash};
+use std::collections::HashMap;
 
 use crate::{config, helpers};
 use fundsp::prelude::*;
