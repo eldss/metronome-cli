@@ -19,24 +19,11 @@ impl Synth {
         let _time_events = match &config.tones {
             Some(tone_enum) => match tone_enum {
                 // Harmonic metronome with unchanging tones
-                Tones::List(tone_list) => piano::add_time_notes(
-                    tone_list,
-                    &mut sequencer,
-                    0.2,
-                    config.bpm,
-                    config.drop_beats,
-                ),
+                Tones::List(tone_list) => piano::add_time_notes(tone_list, &mut sequencer, config),
 
                 // Harmonic metronome with a changing chord progression.
                 Tones::Map(tone_map) => {
-                    // TODO: Handle map case
-                    piano::add_time_notes(
-                        &tone_map.keys().cloned().collect::<Vec<String>>(),
-                        &mut sequencer,
-                        0.1,
-                        config.bpm,
-                        config.drop_beats,
-                    )
+                    piano::add_chord_progression(tone_map, &mut sequencer, config)
                 }
             },
             // Tones were not given, so a valid CLI invocation must mean we are not in harmonic mode.

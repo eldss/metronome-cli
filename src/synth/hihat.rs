@@ -5,11 +5,11 @@ use fundsp::prelude::*;
 /// Call `reset()` on the returned unit to retrigger the burst.
 pub fn hihat_synth() -> Box<dyn AudioUnit> {
     // Burst length in seconds.
-    let burst_duration = 0.04;
+    let burst_duration = 0.03;
     // Short attack duration (in seconds).
     let attack_time = 0.001;
     // Controls exponential decay (higher means faster decay) for the remainder.
-    let decay_factor = 100.0;
+    let decay_factor = 150.0;
     // Bandpass center frequency in Hz.
     let bp_center = 1000.0;
     // Bandpass Q (resonance factor).

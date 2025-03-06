@@ -41,6 +41,8 @@ pub fn initialize_audio_stream(
     // Ensure we capture the correct number of beats in a loop
     let beats_per_sequence = if let Some((on, off)) = app_config.drop_beats {
         on + off
+    } else if let Some(beats) = &app_config.beats_per {
+        beats.iter().sum()
     } else {
         1
     };

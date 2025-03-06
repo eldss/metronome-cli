@@ -1,6 +1,7 @@
 use core::f64;
+use std::{collections::HashMap, hash::Hash};
 
-use crate::helpers;
+use crate::{config, helpers};
 use fundsp::prelude::*;
 
 /// Generates an electric piano-like synth sound for the given note(s).
@@ -122,7 +123,6 @@ pub fn add_drone_notes(notes: &[String], sequencer: &mut Sequencer) -> Vec<Event
 ///
 /// * `notes` - A slice of note strings (e.g., "C4", "E#4", "Gb4").
 /// * `sequencer` - A mutable reference to the sequencer to which the notes should be added.
-/// * `note_duration` - The duration (in seconds) for which each note should play.
 /// * `bpm` - The beats per minute for the sequencer.
 /// * `drop_beats` - An optional tuple of two u8 values representing the number of on and off beats to drop.
 ///
@@ -132,14 +132,13 @@ pub fn add_drone_notes(notes: &[String], sequencer: &mut Sequencer) -> Vec<Event
 pub fn add_time_notes(
     notes: &[String],
     sequencer: &mut Sequencer,
-    note_duration: f32,
-    bpm: u32,
-    drop_beats: Option<(u8, u8)>,
+    config: &config::AppConfig,
 ) -> Vec<EventId> {
     let mut events: Vec<EventId> = Vec::new();
-    let beat_period = 60.0 / (bpm as f64);
+    let beat_period = 60.0 / (config.bpm as f64);
+    let note_duration: f32 = 0.2; // seconds
 
-    if let Some((on, off)) = drop_beats {
+    if let Some((on, off)) = config.drop_beats {
         let mut beat_start = 0.0;
 
         // Push on beats
@@ -179,6 +178,57 @@ pub fn add_time_notes(
                 0.001,
                 electric_piano(note, Some(note_duration), notes.len()),
             ));
+        }
+    }
+
+    events
+}
+
+/// Adds a chord progression to the sequencer. Each chord in the progression will play for one beat.
+///
+/// # Arguments
+/// * `tone_map` - A map of chord names to note strings (e.g., "C4", "E#4", "Gb4").
+/// * `sequencer` - A mutable reference to the sequencer to which the notes should be added.
+/// * `config` - The application configuration.
+///
+/// # Returns
+///
+/// A vector of `EventId`s representing the events added to the sequencer.
+pub fn add_chord_progression(
+    tone_map: &HashMap<String, Vec<String>>,
+    sequencer: &mut Sequencer,
+    config: &config::AppConfig,
+) -> Vec<EventId> {
+    let mut events: Vec<EventId> = Vec::new();
+    let beat_period = 60.0 / (config.bpm as f64);
+    let note_duration: f32 = 0.2; // seconds
+
+    let mut beat_start = 0.0;
+
+    // If this function is run, validation has already ensured that both progression and beats_per are Some.
+    if let (Some(progression), Some(beats_per)) =
+        (config.progression.as_ref(), config.beats_per.as_ref())
+    {
+        // Zip the progression and beats_per vectors together to get the chord and beats for each iteration.
+        for (chord, &beats) in progression.iter().zip(beats_per.iter()) {
+            println!("Chord: {}, Beats: {}", chord, beats);
+            if let Some(notes) = tone_map.get(chord) {
+                println!("Notes: {:?}", notes);
+                // Play each note in the chord for the specified number of beats.
+                for _ in 0..beats {
+                    for note in notes {
+                        events.push(sequencer.push(
+                            beat_start,
+                            beat_start + beat_period,
+                            Fade::Smooth,
+                            0.001,
+                            0.001,
+                            electric_piano(note, Some(note_duration), notes.len()),
+                        ));
+                    }
+                    beat_start += beat_period;
+                }
+            }
         }
     }
 

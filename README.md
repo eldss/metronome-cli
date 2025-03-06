@@ -95,7 +95,7 @@ If you have suggestions to improve the sound design and/or listening experience 
 
 ### Beat Dropping (Muting)
 
-There are two ways to drop - or mute - beats during playback. Either drop a continuous length of notes in a regular pattern, or set a percentage defining the chance any given beat will be dropped (planned).
+There are two ways to drop - or mute - beats during playback. Either drop a continuous length of notes in a regular pattern, or set a percentage defining the chance any given beat will be dropped.
 
 These features can be used to improve your internal sense of timing.
 
@@ -203,7 +203,7 @@ metronome --bpm 60 --harmonic --tones C3,Eb3,G3
 
 The harmonic metronome works with beat dropping as well.
 
-The above example plays the same chord for every beat, but you can also define a chord progression (planned):
+The above example plays the same chord for every beat, but you can also define a chord progression:
 
 ```sh
 metronome \
@@ -305,7 +305,7 @@ Play the given notes instead of a click. Can play from 1 to 4 notes at a time.
 metronome --bpm <bpm> --harmonic --tones <tones>
 ```
 
-#### (Planned) Harmonic Click with Chord Progression:
+#### Harmonic Click with Chord Progression:
 Play the given chord progression instead of a click. Like playing tones instead of a click, but allows defining groups of tones, the order they are played, and the number of beats each plays for.
 
 ```sh
