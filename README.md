@@ -1,5 +1,7 @@
 # Metronome CLI
 
+[![Crates.io](https://img.shields.io/crates/v/metronome-cli.svg)](https://crates.io/crates/metronome-cli)
+
 A powerful and flexible command-line metronome designed to enhance your internal timing and harmonic intuition with features like beat muting, BPM ramping, drone tones, and chords.
 
 ## Overview
